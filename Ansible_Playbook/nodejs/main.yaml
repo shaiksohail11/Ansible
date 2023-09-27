@@ -1,0 +1,34 @@
+---
+- name: installing nodejs on "Ubuntu" and "centos"
+  hosts: all
+  become: yes
+  vars:
+    dest: /home/shaik/shaik.sh
+    deb_package: deb
+    rpm_package: rpm
+    version: 14.x
+    package_name: nodejs
+  tasks:
+    - name: installing node js
+      ansible.builtin.get_url:
+        url: "https://{{ deb_package }}.nodesource.com/setup_{{ version }}"
+        dest: "{{ dest }}"
+        mode: "777"
+      when: ansible_facts['distribution'] == "Ubuntu"
+
+    - name: installing node js
+      ansible.builtin.get_url:
+        url: "https://{{ rpm_package }}.nodesource.com/setup_{{ version }}"
+        dest: "{{ dest }}"
+        mode: "777"
+      when: ansible_facts['distribution'] == "CentOS"
+
+    - name: executing the above file using bash shell
+      ansible.builtin.shell:
+        cmd: /home/shaik/shaik.sh
+        
+    - name: installing node js
+      ansible.builtin.package:
+        name: "{{ package_name }}"
+        state: present
+

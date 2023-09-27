@@ -1,0 +1,39 @@
+---
+- name: installing apache2-php(Lamp) on ubunt 22.04 
+  become: yes
+  hosts: localhost
+  tasks:
+    - name: Installing apache2
+      ansible.builtin.apt:
+        name: apache2
+        update_cache: yes
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: php
+      ansible.builtin.apt:
+        name: php
+        update_cache: yes
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: copying info.php 
+      ansible.builtin.copy:
+        src: info.php
+        dest: /var/www/html/info.php
+      when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: installing apache2-php(Lamp) on Centos 7
+  become: yes
+  hosts: all
+  tasks:
+    - name: installing httpd
+      ansible.builtin.yum:
+        name: httpd
+        update_cache: yes
+        state: present
+      when: ansible_facts['distribution'] == "CentOs"
+    - name: start service httpd, if not started
+      ansible.builtin.systemd:
+        name: httpd
+        state: started
+        enabled: yes
+      when: ansible_facts['distribution'] == "CentOs"

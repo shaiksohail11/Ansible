@@ -1,0 +1,51 @@
+---
+- name: installing HA-Proxy on ubuntu 22.04
+  hosts: all
+  become: yes
+  vars:
+    app: haproxy
+  tasks:
+    - name: installing ha-proxy
+      ansible.builtin.apt:
+        name: "{{ app }}"
+        update_cache: yes                # pending 
+        state: present 
+    - name: copying /etc/haproxy/haproxy.cfg   /etc/haproxy/haproxy.cfg.bk
+      ansible.builtin.copy:
+        src: /etc/haproxy/haproxy.cfg
+        dest: /etc/haproxy/haproxy.cfg.bk
+        remote_src: yes
+    - name: Insert/Update "Match User" configuration block in /etc/ssh/sshd_config
+      ansible.builtin.blockinfile:
+        path: /etc/haproxy/haproxy.cfg
+        block: | 
+          frontend example_front_end
+
+            bind *:80
+
+            option forwardfor  
+
+            default_backend web_servers
+
+          backend web_servers
+
+              balance roundrobin
+
+              server web_servers1 172.31.15.0:80 check
+
+              server web_servers2 172.31.6.210:80 check
+          listen stats
+            bind :32600
+            stats enable
+            stats uri /
+            stats hide-version
+            stats auth subrat:5238
+    - name: restart haproxy
+      ansible.builtin.systemd:
+        name: haproxy
+        enabled: true
+        state: restarted
+        
+
+      
+

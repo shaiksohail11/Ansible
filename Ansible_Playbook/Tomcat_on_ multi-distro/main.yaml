@@ -1,0 +1,100 @@
+---
+- name: Installing tomcat on ubuntu 22.04 and CentOS
+  hosts: all
+  become: yes
+  tasks:
+    - name: update apt update_cache
+      ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: Installing java 11
+      ansible.builtin.package:
+        name: "{{ package }}"
+        state: present
+    - name: creating group
+      ansible.builtin.group:
+        name: tomcat
+        system: true
+        state: present
+    - name: create and adding user to the group
+      ansible.builtin.user:
+        name: tomcat
+        create_home: yes
+        group: tomcat
+        home: /opt/tomcat
+        shell: /bin/false
+        system: true
+        state: present
+    - name: installing tomcat
+      ansible.builtin.get_url:
+        url: https://archive.apache.org/dist/tomcat/tomcat-10/v10.0.8/bin/apache-tomcat-10.0.8.tar.gz
+        dest: /tmp/
+        mode: '0440'
+    - name: creating /opt/tomcat/ directory
+      ansible.builtin.file:
+        path: /opt/tomcat/
+        state: directory
+    - name: change the ownership permissions
+      ansible.builtin.file:
+        path: /opt/tomcat/
+        recurse: yes
+        mode: '777'
+    - name: unarcheive th zip file
+      ansible.builtin.unarchive:
+        src: /tmp/apache-tomcat-10.0.8.tar.gz
+        dest: /tmp/
+        remote_src: yes
+    - name: mv file to /opt/tomcat
+      ansible.builtin.copy:
+        src: /tmp/apache-tomcat-10.0.8/
+        dest: /opt/tomcat/
+        remote_src: yes
+    - name: copying conf.xml file
+      ansible.builtin.copy:
+        src: conf.xml
+        dest: /opt/tomcat/conf/tomcat-users.xml
+        remote_src: yes
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: copy context.xml
+      ansible.builtin.copy:
+        src: context.xml
+        dest: /opt/tomcat/webapps/manager/META-INF/context.xml
+        remote_src: yes
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: copy host-context.xml
+      ansible.builtin.copy:
+        src: host-context.xml
+        dest: /opt/tomcat/webapps/host-manager/META-INF/context.xml
+        remote_src: yes
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: copy context.xml
+      ansible.builtin.copy:
+        src: tomcat.service
+        dest: /etc/systemd/system/tomcat.service
+        remote_src: yes
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: copy cent conf.xml
+      ansible.builtin.copy:
+        src: cent-conf.xml
+        dest: /opt/tomcat/conf/tomcat-users.xml
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: copy cent conf.xml
+      ansible.builtin.copy:
+        src: cent-context.xml
+        dest: /opt/tomcat/webapps/manager/META-INF/context.xml
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: copy cent conf.xml
+      ansible.builtin.copy:
+        src: cent-host.xml
+        dest: /opt/tomcat/webapps/host-manager/META-INF/context.xml
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: copy cent conf.xml
+      ansible.builtin.copy:
+        src: cent-tomcat.service
+        dest: /etc/systemd/system/tomcat.service
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: start service tomcat, if not started
+      ansible.builtin.systemd:
+        name: tomcat
+        state: started
+        enable: yes

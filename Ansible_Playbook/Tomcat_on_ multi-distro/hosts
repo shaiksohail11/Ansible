@@ -1,0 +1,5 @@
+[ubuntu]
+localhost package=default-jdk
+
+[centos]  
+172.31.87.239 package=java-11-openjdk-devel

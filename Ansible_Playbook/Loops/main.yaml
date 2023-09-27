@@ -1,0 +1,16 @@
+---
+- name: deploying packages
+  become: yes
+  hosts: all
+  tasks:
+    - name: deploying packages
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ packages }}"
+    - name: ansible_config_file
+      ansible.builtin.debug:
+        var: ansible_config_file
+    - name: ansible inventory file
+      ansible.builtin.debug:
+        var: inventory_file

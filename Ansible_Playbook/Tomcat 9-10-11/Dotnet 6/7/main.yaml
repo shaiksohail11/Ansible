@@ -1,0 +1,44 @@
+---
+- name: Installing dotnet 6/7 
+  hosts: all
+  become: yes
+  vars:
+    os_ver: 22.04
+    deb_microsoft_key: "https://packages.microsoft.com/config/ubuntu/{{ os_ver }}/packages-microsoft-prod.deb"
+    deb_package: packages-microsoft-prod.deb
+    sdk_ver: 6.0
+    install_sdk: "dotnet-sdk-{{ sdk_ver }}"
+    install_https_cert: apt-transport-https
+    runtime_ver: 6.0
+    install_runtime: "aspnetcore-runtime-{{ runtime_ver }}"
+  tasks:
+    - name: downloading deb-microsoft-key
+      ansible.builtin.get_url:
+        url: "{{ deb_microsoft_key }}" 
+        dest: .
+        mode: "777"
+    - name: Install a .deb package
+      ansible.builtin.apt:
+        deb: ./packages-microsoft-prod.deb 
+    - name: installing dotnet sdk
+      ansible.builtin.package:
+        name:
+          - "{{ install_https_cert }}"
+          - "{{ install_sdk }}"
+        state: present
+    - name: update cache
+      ansible.builtin.apt:
+        update_cache: yes
+    - name: installing netcore runtime
+      ansible.builtin.package:
+        name: 
+          - "{{ install_https_cert }}"
+          - "{{ install_runtime }}"
+        state: present
+
+# Additionally you can check with a simple HELLOWORLD application, the steps are
+# dotnet new console -o HelloWorld
+# cd  HelloWorld
+# dotnet run
+
+      

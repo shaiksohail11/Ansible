@@ -1,0 +1,20 @@
+---
+- name: installing apache2-php(Lamp) on ubunt 22.04
+  become: yes
+  hosts: all
+  tasks:
+    - name: Installing apache2
+      ansible.builtin.apt:
+        name: apache2
+        update_cache: yes
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: php
+      ansible.builtin.apt:
+        name: php
+        update_cache: yes
+        state: present
+    - name: copying info.php 
+      ansible.builtin.copy:
+        src: info.php
+        dest: /var/www/html/info.php

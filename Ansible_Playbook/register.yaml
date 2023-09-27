@@ -1,0 +1,11 @@
+---
+- name: register demo
+  hosts: all
+  become: yes
+  tasks:
+    - name: install apache2
+      ansible.builtin.package:
+        name: apache2
+        state: present
+      register: apache status
+      

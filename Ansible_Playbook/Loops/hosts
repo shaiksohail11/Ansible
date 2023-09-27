@@ -1,0 +1,4 @@
+# This is the ini format of the ansible for writing inventory
+
+[shaik]
+localhost packages='["git","net-tools","tree","nano"]'

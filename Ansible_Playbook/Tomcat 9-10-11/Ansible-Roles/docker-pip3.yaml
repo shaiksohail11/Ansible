@@ -1,0 +1,14 @@
+
+#This role is taken from Asible-Galaxy..written by 'geerlingguy' 
+# Before running the play-book we need to install the role from 'Ansible-Galaxy' into 'Ansible-ControlNode'
+# This can be acheived by 
+#  <ansible-galaxy install geerlingguy.docker>
+#   <ansible-galaxy install geerlingguy.pip>
+
+---
+ - name: installing docker by roles
+   hosts: all
+   become: yes
+   roles:
+     - geerlingguy.docker
+     - geerlingguy.pip

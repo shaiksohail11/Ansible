@@ -1,0 +1,33 @@
+---
+ - name: Installing spc app on ubuntu 22.04
+   become: yes
+   hosts: all
+   vars:
+     ubuntu-java11: openjdk-11-jdk
+     centos-java11: java-11-openjdk-devel
+     wget: wget
+     spc_url: https://referenceapplicationskhaja.s3.us-west-2.amazonaws.com/spring-petclinic-2.4.2.jar
+   tasks:
+     - name: installing java on ubuntu
+       ansible.builtin.apt:
+         name: 
+           - "{{ java11 }}"
+           - "{{ wget }}"
+         state: present
+       when: ansible_facts['distribution'] == "Ubuntu"
+     - name: installing java 11 on centos
+       ansible.builtin.yum:
+         name:
+           - "{{ centos-java11 }}"
+           - "{{ wget }}"
+         state: present
+       when: ansible_facts['distribution'] == "CentOS"
+     - name: downloading spc url
+       ansible.builtin.get_url:
+         url: "{{ spc_url }}"
+         dest: .
+         mode: "777"
+     - name: running the application
+       ansible.builtin.command:
+         cmd: "java -jar spring-petclinic-2.4.2.jar"
+    

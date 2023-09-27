@@ -1,0 +1,68 @@
+---
+- name: Installing tomcat on ubuntu 22.04
+  hosts: all
+  become: yes
+  tasks:
+    - name: Installing java 11
+      ansible.builtin.apt:
+        name: default-jdk
+        update_cache: yes
+        state: present
+    - name: installing tomcat
+      ansible.builtin.get_url:
+        url: https://archive.apache.org/dist/tomcat/tomcat-10/v10.0.8/bin/apache-tomcat-10.0.8.tar.gz
+        dest: /tmp/
+        mode: '0440'
+    - name: creating group 
+      ansible.builtin.group:
+        name: tomcat
+        system: true
+        state: present
+    - name: create and adding user to the group
+      ansible.builtin.user:
+        name: tomcat
+        create_home: yes
+        group: tomcat
+        home: /opt/tomcat
+        system: true
+        state: present
+    - name: creating /opt/tomcat/ directory
+      ansible.builtin.file:
+        path: /opt/tomcat/
+        state: directory
+    - name: unarcheive th zip file
+      ansible.builtin.unarchive:
+        src: /tmp/apache-tomcat-10.0.8.tar.gz
+        dest: /opt/tomcat/
+        remote_src: yes
+    - name: change the ownership permissions
+      ansible.builtin.file:
+        path: /opt/tomcat/
+        recurse: yes
+        mode: '777'
+    - name: copy conf.xml file
+      ansible.builtin.copy:
+        src: conf.xml
+        dest: /opt/tomcat/apache-tomcat-10.0.8/conf/tomcat-users.xml
+        remote_src: yes
+    - name: copy context.xml file
+      ansible.builtin.copy:
+        src: context.xml
+        dest: /opt/tomcat/apache-tomcat-10.0.8/webapps/manager/META-INF/context.xml
+        remote_src: yes
+    - name: copy host-context.xml file
+      ansible.builtin.copy:
+        src: host-context.xml
+        dest: /opt/tomcat/apache-tomcat-10.0.8/webapps/host-manager/META-INF/context.xml
+        remote_src: yes
+    - name: copy tomcat service file
+      ansible.builtin.copy:
+        src: tomcat.service
+        dest: /etc/systemd/system/tomcat.service
+        remote_src: yes
+    - name: restart the app. if stopped
+      ansible.builtin.systemd:
+        name: tomcat
+        daemon_reload: yes
+        enabled: yes
+        state: restarted

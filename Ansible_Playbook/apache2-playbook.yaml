@@ -1,0 +1,10 @@
+---
+- name: Install apache2 server on ubuntu 20.04
+  become: yes
+  hosts: all
+  tasks:
+    - name: installing apache2
+      ansible.builtin.apt:
+        name: apache2
+        update_cache: true
+        state: present

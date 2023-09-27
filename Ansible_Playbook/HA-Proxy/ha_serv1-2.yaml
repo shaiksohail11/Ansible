@@ -1,0 +1,40 @@
+---
+- name: installing HA-Proxy Frontend & Backend on 2 server
+  hosts: all
+  become: yes
+  vars:
+    app: apache2
+  tasks:
+    - name: installing apache2
+      ansible.builtin.apt:
+        name: "{{ app }}"
+        update_cache: yes 
+        state: present
+    - name: Create a apache2 conf file
+      ansible.builtin.copy:
+        src: apache2-conf.service
+        dest: /etc/apache2/ports.conf
+    - name: Create a hosts file
+      ansible.builtin.copy:
+        src: virtualhost.conf
+        dest: /etc/apache2/sites-available/000-default.conf
+    - name: reload daemon apache2
+      ansible.builtin.systemd:
+        name: apache2
+        daemon_reload: yes
+    - name: Remove file (delete file)
+      ansible.builtin.file:
+        path: /var/www/html/index.html
+        state: absent
+# Before executing the below file, comment the index2.html
+    - name: Create a www file on serv-1 
+      ansible.builtin.copy:
+        src: index1.html
+        dest: /var/www/html/index.html
+# Before executing the below file, comment the index2.html
+    - name: Create a www file on serv-2
+      ansible.builtin.copy:
+        src: index2.html
+        dest: /var/www/html/index.html 
+
+

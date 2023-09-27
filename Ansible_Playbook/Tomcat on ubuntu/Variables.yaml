@@ -1,0 +1,13 @@
+---
+- name: variables demo
+  hosts: all
+  become: yes
+  vars:
+    naam: shaik_sohail
+  tasks:
+    - name: print variables demo
+      ansible.builtin.debug:
+        var: naam
+    - name: print something
+      ansible.builtin.debug:
+        msg: "Assalamualaikum {{ naam }} bhai"

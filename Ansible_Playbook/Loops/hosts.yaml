@@ -1,0 +1,14 @@
+
+# This is the yaml format of writing inventory
+---
+all:
+  children:
+    shaik:
+      hosts:
+        localhost:
+          packages:
+            - git
+            - net-tools
+            - nano
+            - tree
+    

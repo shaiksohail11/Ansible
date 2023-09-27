@@ -1,0 +1,31 @@
+---
+- name: installing apache2 on ubuntu 22.04 and Centos 7
+  become: yes
+  hosts: all
+  tasks:
+    - name: update apt update_cache
+      ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: installing apache2
+      ansible.builtin.package:
+        name: apache2
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: start apache2, if not started
+      ansible.builtin.systemd:
+        name: apache2
+        state: started
+        enabled: yes
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: installing httpd
+      ansible.builtin.package:
+        name: httpd
+        state: present
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: start httpd, if not started
+      ansible.builtin.systemd:
+        name: httpd
+        state: started
+        enabled: yes
+      when: ansible_facts['distribution'] == "CentOS"
