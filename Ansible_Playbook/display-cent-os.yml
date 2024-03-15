@@ -1,0 +1,13 @@
+---
+- name: Display Hostname and OS Information
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: Display Hostname
+      debug:
+        msg: "Hostname: {{ ansible_hostname }}"
+
+    - name: Display OS Information
+      debug:
+        msg: "Operating System: {{ ansible_distribution }} {{ ansible_distribution_version }}"
