@@ -1,0 +1,8 @@
+---
+- name: Create a file with content using Ansible
+  hosts: all
+  tasks:
+    - name: Create file with content
+      copy:
+        content: "This file is created from Ansible Tower"
+        dest: /home/ubuntu/By-ansible-tower.yml
