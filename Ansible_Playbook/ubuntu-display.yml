@@ -1,0 +1,13 @@
+---
+- name: View OS Version and IP Address
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: Display OS Version
+      debug:
+        msg: "OS Version: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: Display IP Address
+      debug:
+        msg: "IP Address: {{ ansible_default_ipv4.address }}"
