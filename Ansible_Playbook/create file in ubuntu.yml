@@ -1,6 +1,5 @@
 ---
 - name: Create a file with content using Ansible
-  become: yes
   hosts: all
   tasks:
     - name: Create file with content
