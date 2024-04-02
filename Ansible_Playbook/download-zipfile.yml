@@ -1,0 +1,21 @@
+---
+- name: Download artifacts from GitLab CI job
+  hosts: all
+  tasks:
+    - name: Download artifacts
+      uri:
+        url: "https://git.voziq.com/api/v4/projects/7/jobs/artifacts/feature/upsells/download?job=build"
+        method: GET
+        headers:
+          PRIVATE-TOKEN: "rGcp5xyKykfiioE2sFyT"
+        dest: "artifacts.zip"
+      register: result
+
+    - name: Ensure download success
+      fail:
+        msg: "Failed to download artifacts: {{ result.msg }}"
+      when: result.status != 200
+
+    - name: Show downloaded file information
+      debug:
+        msg: "Downloaded file: {{ result.dest }}"
